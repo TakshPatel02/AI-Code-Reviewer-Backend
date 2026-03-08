@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import User from "../models/user.model.js";
 import { loginSchema, signupSchema } from '../validations/user.validations.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/token.util.js';
@@ -41,7 +42,6 @@ const signupUser = async (req, res) => {
             id: newUser._id,
             username: newUser.username,
             email: newUser.email,
-            refreshToken: ''
         }
 
         const accessToken = generateAccessToken(payload);
@@ -124,7 +124,7 @@ const loginUser = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'User logged in successfully.',
-            data:{
+            data: {
                 id: user._id,
                 accessToken: accessToken
             }
@@ -139,7 +139,92 @@ const loginUser = async (req, res) => {
     }
 }
 
+const logoutUser = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(400).json({
+                success: false,
+                message: 'No refresh token provided.'
+            });
+        }
+
+        await User.updateOne({ refreshToken }, { refreshToken: null });
+
+        res.clearCookie('refreshToken');
+
+        return res.status(200).json({
+            success: true,
+            message: 'User logged out successfully.'
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: 'An error occurred while logging out the user.'
+        })
+    }
+
+}
+
+const newRefreshTokenGeneration = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(400).json({
+                success: false,
+                message: 'No refresh token provided.'
+            });
+        }
+
+        const user = await User.findOne({ refreshToken });
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid refresh token.'
+            });
+        }
+
+        const payload = {
+            id: user._id,
+            username: user.username,
+            email: user.email
+        }
+
+        jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET, (err, decoded) => {
+            if (err || decoded.payload.id !== user._id.toString()) {
+                return res.stauts(400).json({
+                    success: false,
+                    message: 'Invalid refresh token.'
+                });
+            }
+
+            const newAccessToken = generateAccessToken(payload);
+            return res.status(200).json({
+                success: true,
+                message: 'Access token refreshed successfully.',
+                data: {
+                    accessToken: newAccessToken
+                }
+            });
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: 'An error occurred while refreshing the access token.'
+        })
+    }
+}
+
 export {
     signupUser,
-    loginUser
+    loginUser,
+    logoutUser,
+    newRefreshTokenGeneration
 }
