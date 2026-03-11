@@ -4,6 +4,7 @@ import User from "../models/user.model.js";
 import { loginSchema, signupSchema } from '../validations/user.validations.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/token.util.js';
 
+// The function responsible for handling user signup. It validates the input, checks for existing users, hashes the password, creates a new user, generates tokens, and sends the appropriate reponse back to the client.
 const signupUser = async (req, res) => {
     try {
         const validatedData = await signupSchema.safeParseAsync(req.body);
@@ -73,6 +74,7 @@ const signupUser = async (req, res) => {
     }
 }
 
+// The function responsible for handling user login. It validates the input, checks for the user's existence, compares passwords, generates tokens, and sends the appropriate response back to the client.
 const loginUser = async (req, res) => {
     try {
         const validatedData = await loginSchema.safeParseAsync(req.body);
@@ -139,6 +141,7 @@ const loginUser = async (req, res) => {
     }
 }
 
+// The function responsible for handling user logout. It checks for the presence of a refresh token, invalidates it in the database, clears the cookie, and sends the appropriate response back to the client.
 const logoutUser = async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken;
@@ -169,6 +172,7 @@ const logoutUser = async (req, res) => {
 
 }
 
+// The function responsible for generating a new access token using the refresh token. It checks for the presence of the refresh token, validates it, generates a new access token, and sends the appropriate response back to the client.
 const newRefreshTokenGeneration = async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken;

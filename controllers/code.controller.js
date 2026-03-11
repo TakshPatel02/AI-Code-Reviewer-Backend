@@ -1,6 +1,7 @@
 import Code from '../models/code.model.js';
 import { codeReviewer } from '../services/ai.service.js';
 
+// The main function to review code using the AI model. It takes code as input and send the code to the AI service for review. It also handles user review limits and saves the review results in the db.
 const reviewCode = async (req, res) => {
     try {
         const { code } = req.body;

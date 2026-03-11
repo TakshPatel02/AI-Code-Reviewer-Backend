@@ -1,15 +1,11 @@
 import Code from '../models/code.model.js';
 
+// Importing the codeReviewer function from the AI service, which will be used to get reviews for the submitted code.
 const getAllReviews = async (req, res) => {
     try {
         const user = req.user;
 
-        console.log('User from token:', user);
-        console.log('Looking for reviews with userId:', user.id);
-
         const reviews = await Code.find({ userId: user.id });
-
-        console.log('Reviews found:', reviews.length);
 
         return res.status(200).json({
             success: true,
@@ -26,6 +22,7 @@ const getAllReviews = async (req, res) => {
     }
 }
 
+// The function responsible for retrieving a specific code review by its ID. It checks if the review exists and belongs to the user, and then returns the review details in the response.
 const getReviewById = async (req, res) => {
     try {
         const user = req.user;
@@ -55,6 +52,7 @@ const getReviewById = async (req, res) => {
     }
 }
 
+// The function responsible for deleting a specific code review by its ID. It checks if the review exists and belongs to the user, deletes it from the database, and returns the appropriate response.
 const deleteReviewById = async (req, res) => {
     try{
         const user = req.user;

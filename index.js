@@ -10,6 +10,7 @@ import userRoutes from './routes/user.routes.js';
 const app = express();
 const PORT = process.env.PORT;
 
+// The main function responsible for starting the server.
 const startServer = async () => {
     try {
         await connectDB(process.env.MONGO_URI);
@@ -23,6 +24,7 @@ const startServer = async () => {
     }
 }
 
+// Middleware setup for parsing JSON, handling cookies, and enabling CORS.
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
@@ -37,6 +39,7 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 });
 
+// The routes for code review, authentication and user management.
 app.use('/code', codeRoutes);
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);

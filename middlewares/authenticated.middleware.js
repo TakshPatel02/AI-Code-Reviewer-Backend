@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 
+// The middleware function responsible for verifying the presence and validity of the JWT access token in the request headers. It checks for the token, verifies it, and attaches the decoded user information to the request object for use in subsequent handlers. If the token is missing or invalid, it sends an appropriate error response back to the client.
 const isAuthenticated = (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];

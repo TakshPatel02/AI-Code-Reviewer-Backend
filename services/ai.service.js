@@ -13,6 +13,7 @@ const apiKey = process.env.GEMINI_API_KEY;
 
 const ai = new GoogleGenAI({ apiKey: apiKey });
 
+// The main prompt for the AI code reviewer, defining the role, responsibilities, guidelines, and tone for the AI to follow when reviewing code. This prompt is designed to ensure that the AI provides detailed, constructive feedback while adhering to best practices in code review.
 const prompt = `Here’s a solid system instruction for your AI code reviewer:
 
                 AI System Instruction: Senior Code Reviewer (7+ Years of Experience)
@@ -87,6 +88,7 @@ const prompt = `Here’s a solid system instruction for your AI code reviewer:
                 Would you like any adjustments based on your specific needs? 🚀 
     `
 
+// The main function to review code using the AI model. It takes code as input and returns the review feedback.
 async function codeReviewer(code) {
     const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
@@ -95,7 +97,6 @@ async function codeReviewer(code) {
             systemInstruction: prompt
         }
     });
-    console.log(response.text);
     return response.text;
 }
 
